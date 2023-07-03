@@ -56,15 +56,16 @@ app.post('/webhook', (req, res) => {
       res.json(response.message)
     } else if (event == 'meeting.ended') {
       let payload = req.body.payload;
-      let result = mix_panel_client.track('ZOOM_MEETING_EVENT', {
+      let mix_panel_event_properties = {
           start_time: payload["start_time"],
           end_time: payload["end_time"],
           time_zone: payload["timezone"],
           duration: payload["duration"],
           topic: payload["topic"],
           id: payload["id"]
-      });
-      console.log(result);
+      }
+      console.log(mix_panel_event_properties);
+      mix_panel_client.track('ZOOM_MEETING_EVENT', mix_panel_event_properties);
     } else {
       response = { message: 'Authorized request to Zoom Webhook sample.', status: 200 }
 
