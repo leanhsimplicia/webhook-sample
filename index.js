@@ -58,7 +58,7 @@ app.post('/webhook', (req, res) => {
       let mix_panel_event_properties = {
           time: Date.now(),
           distinct_id: "ZoomApp",
-          $insert_id: payload["uuid"],
+          $insert_id: Buffer.from(payload["uuid"]).toString('base64'),
           start_time: payload["start_time"],
           end_time: payload["end_time"],
           time_zone: payload["timezone"],
