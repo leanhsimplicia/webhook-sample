@@ -55,7 +55,7 @@ app.post('/webhook', (req, res) => {
       res.status(response.status)
       res.json(response.message)
     } else if (event == 'meeting.ended') {
-      let payload = req.body.payload;
+      let payload = req.body.payload.object;
       let mix_panel_event_properties = {
           start_time: payload["start_time"],
           end_time: payload["end_time"],
