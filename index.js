@@ -60,7 +60,7 @@ app.post('/webhook', (req, res) => {
       let payload = req.body.payload.object;
       let mix_panel_event_properties = {
           distinct_id: "ZoomApp",
-          $insert_id: `${payload["id"]}|||${payload["start_time"]}`,
+          $insert_id: payload["uuid"],
           start_time: payload["start_time"],
           end_time: payload["end_time"],
           time_zone: payload["timezone"],
