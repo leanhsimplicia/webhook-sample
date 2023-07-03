@@ -68,7 +68,7 @@ app.post('/webhook', (req, res) => {
           id: payload["id"]
       }
       request({
-          url: "https://api-eu.mixpanel.com/import?strict=1",
+          url: "https://api-eu.mixpanel.com/track",
           method: "POST",
           json: true,
           body: {"event": 'ZOOM_MEETING_EVENT', "properties": mix_panel_event_properties},
@@ -77,7 +77,7 @@ app.post('/webhook', (req, res) => {
               "Accept":  "application/json"
           },
       }, function (error, response, body){
-          console.log(response);
+          console.log(body);
       });
       response = { message: 'Zoom event processed', status: 200 }
       res.status(response.status)
