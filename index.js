@@ -11,7 +11,9 @@ const options = {
 const app = express()
 const Mixpanel = require('mixpanel');
 
-const mix_panel_client = Mixpanel.init(process.env.MIXPANEL_AUTHORIZATION_CODE)
+const mix_panel_client = Mixpanel.init(process.env.MIXPANEL_AUTHORIZATION_CODE,{
+    host: "api-eu.mixpanel.com",
+},)
 
 app.use(bodyParser.json())
 
@@ -64,7 +66,6 @@ app.post('/webhook', (req, res) => {
           topic: payload["topic"],
           id: payload["id"]
       }
-      console.log(mix_panel_event_properties);
       mix_panel_client.track('ZOOM_MEETING_EVENT', mix_panel_event_properties);
     } else {
       response = { message: 'Authorized request to Zoom Webhook sample.', status: 200 }
