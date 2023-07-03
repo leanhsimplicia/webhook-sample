@@ -59,6 +59,8 @@ app.post('/webhook', (req, res) => {
     } else if (event == 'meeting.ended') {
       let payload = req.body.payload.object;
       let mix_panel_event_properties = {
+          distinct_id: "ZoomApp",
+          $insert_id: payload["id"],
           start_time: payload["start_time"],
           end_time: payload["end_time"],
           time_zone: payload["timezone"],
