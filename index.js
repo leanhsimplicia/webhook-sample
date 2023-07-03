@@ -9,7 +9,9 @@ const options = {
   key: fs.readFileSync('/etc/letsencrypt/live/qa1.simplicia.co/privkey.pem')
 };
 const app = express()
+const Mixpanel = require('mixpanel');
 
+const mix_panel_client = Mixpanel.init(process.env.MIXPANEL_AUTHORIZATION_CODE)
 
 app.use(bodyParser.json())
 
@@ -35,9 +37,9 @@ app.post('/webhook', (req, res) => {
 
   // you validating the request came from Zoom https://marketplace.zoom.us/docs/api-reference/webhook-reference#notification-structure
   if (req.headers['x-zm-signature'] === signature) {
-
+    const event = req.body.event;
     // Zoom validating you control the webhook endpoint https://marketplace.zoom.us/docs/api-reference/webhook-reference#validate-webhook-endpoint
-    if(req.body.event === 'endpoint.url_validation') {
+    if(event === 'endpoint.url_validation') {
       const hashForValidate = crypto.createHmac('sha256', process.env.ZOOM_WEBHOOK_SECRET_TOKEN).update(req.body.payload.plainToken).digest('hex')
 
       response = {
@@ -52,6 +54,16 @@ app.post('/webhook', (req, res) => {
 
       res.status(response.status)
       res.json(response.message)
+    } else if (event == 'meeting.ended') {
+      let payload = req.body.payload;
+      mix_panel_client.track('ZOOM_MEETING_EVENT', {
+          start_time: payload["start_time"] ?? "",
+          end_time: payload["end_time"] ?? "",
+          time_zone: payload["timezone"] ?? "",
+          duration: payload["duration"] ?? "",
+          topic: payload["topic"] ?? "",
+          id: payload["id"] ?? ""
+      });
     } else {
       response = { message: 'Authorized request to Zoom Webhook sample.', status: 200 }
 
@@ -74,4 +86,4 @@ app.post('/webhook', (req, res) => {
   }
 })
 
-https.createServer(options, app).listen(443);
+https.createServer(options, app).listen(4000);
