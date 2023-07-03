@@ -9,8 +9,11 @@ const options = {
   key: fs.readFileSync('/etc/letsencrypt/live/qa1.simplicia.co/privkey.pem')
 };
 const app = express()
-const axios = require('axios');
+const Mixpanel = require('mixpanel');
 
+const mix_panel_client = Mixpanel.init(process.env.REMOTE_ACCESS_MIXPANEL_KEY,{
+    host: "api-eu.mixpanel.com",
+})
 
 app.use(bodyParser.json())
 
@@ -63,21 +66,7 @@ app.post('/webhook', (req, res) => {
           topic: payload["topic"],
           id: payload["id"]
       }
-    const options = {
-      method: 'POST',
-      url: 'https://api-eu.mixpanel.com/track',
-      headers: {
-        'accept': 'text/plain',
-        'content-type': 'application/json',
-        'Authorization': `Basic ${process.env.MIXPANEL_AUTHORIZATION_CODE}`
-      },
-      data: [{properties: mix_panel_event_properties, event: 'Zoom meeting event'}]
-    };
-    axios
-      .request(options)
-      .then(function (response) {
-        console.log(response.data);
-      })
+      mix_panel_client.track('ZOOM_MEETING_EVENT', mix_panel_event_properties, (err) => console.log(err));
     } else {
       response = { message: 'Authorized request to Zoom Webhook sample.', status: 200 }
 
