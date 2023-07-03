@@ -69,6 +69,9 @@ app.post('/webhook', (req, res) => {
           id: payload["id"]
       }
       mix_panel_client.track('ZOOM_MEETING_EVENT', mix_panel_event_properties, (err) => {if (err) console.log(err.toString())});
+      response = { message: 'Zoom event processed', status: 200 }
+      res.status(response.status)
+      res.json(response)
     } else {
       response = { message: 'Authorized request to Zoom Webhook sample.', status: 200 }
 
