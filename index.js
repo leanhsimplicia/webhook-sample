@@ -65,7 +65,7 @@ app.post('/webhook', (req, res) => {
       }
     const options = {
       method: 'POST',
-      url: 'https://eu.api.mixpanel.com/track',
+      url: 'https://api-eu.mixpanel.com/track',
       headers: {
         'accept': 'text/plain',
         'content-type': 'application/json',
