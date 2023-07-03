@@ -74,8 +74,7 @@ app.post('/webhook', (req, res) => {
           body: {"event": 'ZOOM_MEETING_EVENT', "properties": mix_panel_event_properties},
           headers: {
               "Content-Type": "application/json",
-              "Accept":  "application/json",
-              "Authorization": "Basic " +
+              "Accept":  "application/json"
           },
       }, function (error, response, body){
           console.log(response);
