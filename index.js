@@ -56,7 +56,6 @@ app.post('/webhook', (req, res) => {
     } else if (event == 'meeting.ended') {
       let payload = req.body.payload.object;
       let mix_panel_event_properties = {
-          token: process.env.REMOTE_ACCESS_MIXPANEL_KEY,
           time: Date.now(),
           distinct_id: "ZoomApp",
           $insert_id: payload["uuid"],
@@ -68,13 +67,14 @@ app.post('/webhook', (req, res) => {
           id: payload["id"]
       }
       request({
-          url: "https://api-eu.mixpanel.com/track",
+          url: "https://api-eu.mixpanel.com/import?strict=1",
           method: "POST",
           json: true,
-          body: {"event": 'ZOOM_MEETING_EVENT', "properties": mix_panel_event_properties},
+          body: [{"event": 'ZOOM_MEETING_EVENT', "properties": mix_panel_event_properties}],
           headers: {
               "Content-Type": "application/json",
-              "Accept":  "application/json"
+              "Accept":  "application/json",
+              "Authorization": "Basic " + Buffer.from(`${process.env.REMOTE_ACCESS_MIXPANEL_KEY}:`).toString('base64')
           },
       }, function (error, response, body){
           console.log(body);
