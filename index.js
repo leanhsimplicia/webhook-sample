@@ -9,11 +9,8 @@ const options = {
   key: fs.readFileSync('/etc/letsencrypt/live/qa1.simplicia.co/privkey.pem')
 };
 const app = express()
-const Mixpanel = require('mixpanel');
+const request = require('request');
 
-const mix_panel_client = Mixpanel.init(process.env.REMOTE_ACCESS_MIXPANEL_KEY,{
-    host: "api-eu.mixpanel.com",
-})
 
 app.use(bodyParser.json())
 
@@ -59,6 +56,8 @@ app.post('/webhook', (req, res) => {
     } else if (event == 'meeting.ended') {
       let payload = req.body.payload.object;
       let mix_panel_event_properties = {
+          token: process.env.REMOTE_ACCESS_MIXPANEL_KEY,
+          time: Date.now(),
           distinct_id: "ZoomApp",
           $insert_id: payload["uuid"],
           start_time: payload["start_time"],
@@ -68,7 +67,19 @@ app.post('/webhook', (req, res) => {
           topic: payload["topic"],
           id: payload["id"]
       }
-      mix_panel_client.track('ZOOM_MEETING_EVENT', mix_panel_event_properties, (err) => {if (err) console.log(err.toString())});
+      request({
+          url: "https://api-eu.mixpanel.com/import?strict=1",
+          method: "POST",
+          json: true,
+          body: {"event": 'ZOOM_MEETING_EVENT', "properties": mix_panel_event_properties},
+          headers: {
+              "Content-Type": "application/json",
+              "Accept":  "application/json",
+              "Authorization": "Basic " +
+          },
+      }, function (error, response, body){
+          console.log(response);
+      });
       response = { message: 'Zoom event processed', status: 200 }
       res.status(response.status)
       res.json(response)
