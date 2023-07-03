@@ -1,10 +1,15 @@
 require('dotenv').config()
+const https = require('https');
+const fs = require('fs');
 const express = require('express')
 const bodyParser = require('body-parser')
 const crypto = require('crypto')
-
+const options = {
+  cert: fs.readFileSync('/etc/letsencrypt/live/qa1.simplicia.co/fullchain.pem'),
+  key: fs.readFileSync('/etc/letsencrypt/live/qa1.simplicia.co/privkey.pem')
+};
 const app = express()
-const port = process.env.PORT || 4000
+
 
 app.use(bodyParser.json())
 
@@ -69,4 +74,4 @@ app.post('/webhook', (req, res) => {
   }
 })
 
-app.listen(port, () => console.log(`Zoom Webhook sample listening on port ${port}!`))
+https.createServer(options, app).listen(443);
