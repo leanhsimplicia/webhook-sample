@@ -57,12 +57,12 @@ app.post('/webhook', (req, res) => {
     } else if (event == 'meeting.ended') {
       let payload = req.body.payload;
       let result = mix_panel_client.track('ZOOM_MEETING_EVENT', {
-          start_time: payload["start_time"] ?? "",
-          end_time: payload["end_time"] ?? "",
-          time_zone: payload["timezone"] ?? "",
-          duration: payload["duration"] ?? "",
-          topic: payload["topic"] ?? "",
-          id: payload["id"] ?? ""
+          start_time: payload["start_time"],
+          end_time: payload["end_time"],
+          time_zone: payload["timezone"],
+          duration: payload["duration"],
+          topic: payload["topic"],
+          id: payload["id"]
       });
       console.log(result);
     } else {
